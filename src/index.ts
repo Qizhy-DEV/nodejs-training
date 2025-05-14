@@ -6,6 +6,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDB from './configs/db';
 import { TokenPayload } from './middlewares/auth';
+import taskRoutes from './routes/taskRoutes';
 import voucherRoutes from './routes/voucherRoutes';
 
 declare module 'express-serve-static-core' {
@@ -42,6 +43,7 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+app.use('/api/v1/tasks', taskRoutes);
 app.use('/api/v1/vouchers', voucherRoutes);
 
 app.listen(PORT, () => {

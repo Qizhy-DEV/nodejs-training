@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { RequestHandler } from 'express';
-import { AuthService } from '../services/AuthService';
+import { AuthService } from '../services/authService';
 
 export interface TokenPayload {
     user_id: string;

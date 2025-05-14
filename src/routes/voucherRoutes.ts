@@ -1,8 +1,9 @@
 import { Router } from 'express';
-import { requestVoucherController } from '../controllers/voucherController';
+import { VoucherController } from '../controllers/voucherController';
 
+const voucherController = new VoucherController();
 const router = Router();
 
-router.post('/:eventId', requestVoucherController);
+router.post('/:eventId', voucherController.requestVoucherController);
 
 export default router;
