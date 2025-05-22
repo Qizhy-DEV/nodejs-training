@@ -10,8 +10,9 @@ export interface TokenPayload {
 
 export const authenticate: RequestHandler = (req, res, next) => {
     try {
-        const authHeader = req.headers.authorization;
-        const refreshToken = req.headers['x-refresh-token'] as string;
+        const authHeader = req.headers.authorization as string;
+        const refreshToken = req.cookies.refreshToken as string;
+        const accessToken = authHeader.split(' ')[1];
 
         if (!authHeader || !refreshToken) {
             res.status(400).json({
@@ -21,7 +22,6 @@ export const authenticate: RequestHandler = (req, res, next) => {
             return;
         }
 
-        const accessToken = authHeader.split(' ')[1];
         if (!accessToken) {
             res.status(401).json({
                 message: 'Thiếu token truy cập',
@@ -58,10 +58,7 @@ export const authenticate: RequestHandler = (req, res, next) => {
                                 });
 
                                 req.user = decodedRefreshToken as TokenPayload;
-                                req.tokens = {
-                                    accessToken: newTokens.accessToken,
-                                    refreshToken: newTokens.refreshToken,
-                                };
+                                req.token = newTokens.accessToken;
                                 return next();
                             } catch {
                                 res.status(500).json({
@@ -74,7 +71,7 @@ export const authenticate: RequestHandler = (req, res, next) => {
                     );
                 } else {
                     req.user = decodedAccessToken as TokenPayload;
-                    req.tokens = { accessToken, refreshToken };
+                    req.token = accessToken;
                     next();
                 }
             }

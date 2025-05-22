@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export function getItemsPerPage(totalItems: number, limit: number): number {
     return Math.ceil(totalItems / limit);
 }
@@ -21,4 +24,12 @@ export async function generateSlug(name: string, db: any): Promise<string> {
     }
 
     return slug;
+}
+
+export function changeIdAttribute<T>(data: any) {
+    const { _id: id, ...dataWithoutId } = data;
+    return {
+        ...dataWithoutId,
+        id,
+    } as T;
 }

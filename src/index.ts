@@ -6,15 +6,12 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDB from './configs/db';
 import { TokenPayload } from './middlewares/auth';
-import taskRoutes from './routes/taskRoutes';
-import voucherRoutes from './routes/voucherRoutes';
+import router from './routes';
+import cookieParser from 'cookie-parser';
 
 declare module 'express-serve-static-core' {
     interface Request {
-        tokens?: {
-            accessToken: string;
-            refreshToken: string;
-        };
+        token?: string;
         user?: TokenPayload;
     }
     interface Response {
@@ -34,17 +31,18 @@ app.use(bodyParser.json({ limit: '100mb' }));
 app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 app.use(morgan('dev'));
 app.use(compression());
+app.use(cookieParser());
 
 connectDB();
 
 const corsOptions = {
     origin: [baseURL],
-    allowedHeaders: ['Content-Type', 'x-refresh-token', 'authorization'],
+    allowedHeaders: ['Content-Type', 'x-refresh-token', 'Authorization'],
+    credentials: true,
 };
 app.use(cors(corsOptions));
 
-app.use('/api/v1/tasks', taskRoutes);
-app.use('/api/v1/vouchers', voucherRoutes);
+app.use(router);
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
