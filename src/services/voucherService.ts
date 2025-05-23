@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import Event from '../models/event';
 import Voucher from '../models/voucher';
-import { MailService } from './mailService';
 
 const generateVoucherCode = () => {
     return `VOUCHER-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
@@ -14,7 +13,6 @@ export class VoucherService {
 
         try {
             const event = await Event.findById(eventId).session(session);
-
             if (!event) throw new Error('Event not found');
 
             if (event.voucherCount >= event.maxQuantity) {
@@ -32,16 +30,10 @@ export class VoucherService {
             event.voucherCount += 1;
             await event.save({ session });
 
-            await MailService.sendEmail({
-                email: 'vutienduc26122002zs@gmail.com',
-                subject: `You have got a new Voucher of '${event.name}' event`,
-                html: `Your Voucher code: ${voucherCode}`,
-            });
-
             await session.commitTransaction();
             session.endSession();
 
-            return voucherCreated.toObject();
+            return voucherCreated;
         } catch (error) {
             await session.abortTransaction();
             session.endSession();
