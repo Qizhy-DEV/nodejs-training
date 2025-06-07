@@ -1,17 +1,18 @@
 import mongoose from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import { MongoMemoryReplSet } from 'mongodb-memory-server';
 
-let mongoServer: MongoMemoryServer;
+let mongoServer: MongoMemoryReplSet;
 
 export const connectTestDB = async () => {
-    mongoServer = await MongoMemoryServer.create();
+    mongoServer = await MongoMemoryReplSet.create({
+        replSet: { storageEngine: 'wiredTiger' }, // Sử dụng wiredTiger để hỗ trợ giao dịch
+    });
     const uri = mongoServer.getUri();
-
     await mongoose.connect(uri);
 };
 
 export const disconnectTestDB = async () => {
     await mongoose.connection.dropDatabase();
-    await mongoose.connection.close();
-    await mongoServer.stop();
+    await mongoServer.stop(); // Dừng server trước
+    await mongoose.connection.close(); // Rồi mới đóng kết nối mongoose
 };
